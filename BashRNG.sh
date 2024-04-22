@@ -4,21 +4,18 @@ input=0 #current input, simple as it is
 curroll=0 #current rolled rarity
 tohcho=0 #colour that is offered to player to choose
 cursf=0 #current savefile
-# array_length=0 #:man_shrug:
 
 #savefile order: BashRNGsavefile, current rarity, current colour, amount of rolls, BashRNGsavefile
 
 #player stats
 rolls=0 #amount of rolls
 currrar='none' #current rarity that the player has
-inventory=()
-cc='\033[0;10m' # Current color
+inventory=() #inventory for rarities
+cinventory=( ) #inventory for colours
+cc='\033[0;10m' # Current colour
 
 # presets ig
 NC='\033[0m' # No Color
-#BASHRNG_LOAD="currrar=\$(head -n 2 ".$cursf" | tail -n 1 ); cc=\$(head -n 3 ".$cursf" | tail -n 1 ); rolls=\$(head -n 4 ".$cursf" | tail -n 1 )"
-#BASHRNG_SAVE=( "BashRNGsavefile" "\$currrar" "\$cc" "\$rolls" "BashRNGsavefile" )
-# readonly BASHRNG_LOAD a failed attempt at saving time by by not rewriting two lines of code every time instead of 1
 readonly NC
 
 
@@ -33,7 +30,14 @@ while [[ "$input" != "x" ]]; do
     echo -e "Current rarity: $currrar"
     echo -e "Rolls: $rolls"
     echo
-    echo "Input 'r' to roll, 'b' to use boost (not implemented yet), 'i' to open inventory(not fully  implemented yet), 's' to save, 'l' to load, 'x' to exit(no saving)"
+    echo "Main menu"
+    echo "Commands:"
+    echo "r - roll"
+    echo "b - use boost (not implemented yet)"
+    echo "i - open inventory(not fully  implemented yet)"
+    echo "s - save"
+    echo "l - load"
+    echo "x - exit(no saving)"
     read -r input
     #echo "$input"
 
@@ -41,9 +45,7 @@ while [[ "$input" != "x" ]]; do
         "r")
 
             ranval=$(( RANDOM % 1000 + 1 ))
-            #don't know how to do this with case did it with if elif
-            #TO:DO apparently case supports pattern matching, redo this if elif mess with case edit:nvm
-            if [[ $ranval -le 300 ]]; then #unoptimized code time!
+            if [[ $ranval -le 300 ]]; then #TO;DO: remake the rng system to be more solsrng like
 
                 tohcho='\033[0;90m'
                 curroll="${tohcho}Winbloat (common)${NC}"
@@ -147,7 +149,10 @@ while [[ "$input" != "x" ]]; do
             while [[ "$input" != "e" && "$input" != "d" && "$input" != "i" ]]; do
                 echo -e "Your current rarity is $currrar"
                 echo
-                echo "Do you wish to equip it {e}, dismiss {d}, or put it in the inventory {i}?"
+                echo "Do you wish to"
+                echo "e - equip it"
+                echo "d - dismiss it"
+                echo "i - put it in the inventory"
                 read -r input
                 echo
                 if [[ "$input" = "e" ]]; then
@@ -155,6 +160,7 @@ while [[ "$input" != "x" ]]; do
                     read -r input
                     if [[ "$input" = "y" ]]; then
                     inventory+=("$currrar")
+                    cinventory+=("$currrar")
                     echo -e "$currrar has been added into inventory!"
                     fi
                     cc=$tohcho
@@ -165,6 +171,7 @@ while [[ "$input" != "x" ]]; do
                 elif [[ "$input" = "i" ]]; then
 
                     inventory+=("$curroll")
+                    cinventory+=("$tohcho")
                     echo -e "$curroll has been added into inventory!"
 
                 elif [[ "$input" = "d" ]]; then
@@ -179,6 +186,44 @@ while [[ "$input" != "x" ]]; do
         "i")
         echo "Current items:"
         echo -e "${inventory[@]}"
+        echo "What do you wish to do here?"
+        echo "e - equip (then you will be prompted to input the number)"
+        echo "d - discard an item(then you will be prompted to input the number)"
+        echo "x - exit the inventory"
+        read -r input
+        case "$input" in
+            "e")
+                echo "What would you like to equip? [1-${#inventory[@]}]"
+                read -r input
+                if [ "$input" -ge 1 ] && [ "$input" -le "${#inventory[@]}" ]; then
+                input=$(( input - 1 ))
+                curroll=${inventory[$input]}
+                tohcho=${cinventory[$input]}
+                inventory[input]=$currrar
+                cinventory[input]=$cc
+                currrar=$curroll
+                cc=$tohcho
+                echo -e "$currrar successfully equipped!"
+                else
+                echo "Not a valid input range, exiting the inventory"
+                fi
+            ;;
+            "d")
+                                echo "What would you like to discard? [1-${#inventory[@]}]"
+                                read -r input
+                                if [ "$input" -ge 1 ] && [ "$input" -le "${#inventory[@]}" ]; then
+                                input=$(( input - 1 ))
+                                echo -e "${inventory[$input]} successfully discarded!"
+                                unset 'inventory[input]'
+                                unset 'cinventory[input]'
+                                else
+                                echo "Not a valid input range, exiting the inventory"
+                                fi
+            ;;
+
+            "x")
+
+        esac
         ;;
         "s")
             echo "Choose in which file do you want to store your savefile"
@@ -193,7 +238,7 @@ while [[ "$input" != "x" ]]; do
                 read -r input
                     case "$input" in
                         "y")
-                            echo -e "BashRNGsavefile\n$currrar\n$cc\n$rolls\n${inventory[*]}\nBashRNGsavefile" > ".$cursf"
+                            echo -e "BashRNGsavefile\n$currrar\n$cc\n$rolls\n${inventory[*]}\n${cinventory[*]}\nBashRNGsavefile" > ".$cursf"
                             if [ ! -s ".$cursf" ]; then
                                 echo "Save file created succesfully!"
                             else
@@ -227,6 +272,7 @@ while [[ "$input" != "x" ]]; do
                         cc=$(head -n 3 ".$cursf" | tail -n 1 )
                         rolls=$(head -n 4 ".$cursf" | tail -n 1 )
                         inventory=("$(head -n 5 ".$cursf" | tail -n 1 )")
+                        cinventory=("$(head -n 6 ".$cursf" | tail -n 1 )")
                         echo
                         echo "Savefile loaded succesfully!"
                         ;;
