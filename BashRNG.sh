@@ -4,6 +4,8 @@ input=0 #current input, simple as it is
 curroll=0 #current rolled rarity
 tohcho=0 #colour that is offered to player to choose
 cursf=0 #current savefile
+luckBonus=0 # the luck bonus that increases success chance
+boosts=0 # amount of boosts the player has
 
 #savefile order: BashRNGsavefile, current rarity, current colour, amount of rolls, BashRNGsavefile
 
@@ -23,17 +25,13 @@ readonly NC
 echo -e "welcome to \033[0;33m bash rng${NC}"
 while [[ "$input" != "x" ]]; do
     input="foobar"
-    echo
-    echo
-    echo
-    echo -e "Player: ${cc}$(whoami)${NC}"
+    echo -e "\n \n \nPlayer: ${cc}$(whoami)${NC}"
     echo -e "Current rarity: $currrar"
     echo -e "Rolls: $rolls"
-    echo
-    echo "Main menu"
+    echo -e "\nMain menu"
     echo "Commands:"
     echo "r - roll"
-    echo "b - use boost (not implemented yet)"
+    echo "b - use boost. You currently have $boosts"
     echo "i - open inventory(not fully  implemented yet)"
     echo "s - save"
     echo "l - load"
@@ -44,98 +42,96 @@ while [[ "$input" != "x" ]]; do
     case "$input" in
         "r")
 
-            ranval=$(( RANDOM % 1000 + 1 ))
-            if [[ $ranval -le 300 ]]; then #TO;DO: remake the rng system to be more solsrng like
+            # ranval=$(( RANDOM % 1000 + 1 ))
+            tohcho='\033[0;90m'
+            curroll="${tohcho}Winbloat (common)${NC}"
 
-                tohcho='\033[0;90m'
-                curroll="${tohcho}Winbloat (common)${NC}"
-
-            elif [[ $ranval -gt 300 && $ranval -le 533 ]]; then
+            if [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho='\033[0m'
                 curroll="${tohcho}Unix-likeal (uncommon)${NC}"
 
-            elif [[ $ranval -gt 533 && $ranval -le 634 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;42m"
                 curroll="${tohcho}Minted (rare)${NC}"
 
-            elif [[ $ranval -gt 634 && $ranval -le 710 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;33m"
                 curroll="${tohcho}Ubunted (super rare)${NC}"
 
-            elif [[ $ranval -gt 710 && $ranval -le 777 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;31m"
                 curroll="${tohcho}FreeBSDical (hella rare)${NC}"
 
-            elif [[ $ranval -gt 777 && $ranval -le 828 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;102m"
                 curroll="${tohcho}Cinnamonical (mega rare)${NC}"
 
-            elif [[ $ranval -gt 828 && $ranval -le 864 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;1m"
                 curroll="${tohcho}Archistic (ultra rare)${NC}"
 
-            elif [[ $ranval -gt 864 && $ranval -le 890 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;7m"
                 curroll="${tohcho}Nomehic (epic)${NC}"
 
-            elif [[ $ranval -gt 890 && $ranval -le 911 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;53m"
                 curroll="${tohcho}Fossical (mythic)${NC}"
 
-            elif [[ $ranval -gt 911 && $ranval -le 927 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;35m"
                 curroll="${tohcho}Minixial (balladirical)${NC}"
 
-            elif [[ "$ranval" -gt 927 && "$ranval" -le 941 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 5001 ]]; then
 
                 tohcho="\033[0;104m"
                 curroll="${tohcho}Nyarchd (untold)${NC}"
 
-            elif [[ "$ranval" -gt 941 && "$ranval" -le 953 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;5m"
                 curroll="${tohcho}Gentoostic (uncovered)${NC}"
 
-            elif [[ "$ranval" -gt 953 && "$ranval" -le 964 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;103m"
                 curroll="${tohcho}TempleOStical (legendary)${NC}"
 
-            elif [[ "$ranval" -gt 964 && "$ranval" -le 974 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;43m"
                 curroll="${tohcho}Canonicalistical (catastrophical)${NC}"
 
-            elif [[ "$ranval" -gt 974 && "$ranval" -le 982 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;100m"
                 curroll="${tohcho}Tuxaful (masterful)${NC}"
 
-            elif [[ "$ranval" -gt 982 && "$ranval" -le 989 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;102m"
                 curroll="${tohcho}Emacsed (maxxed)${NC}"
 
-            elif [[ "$ranval" -gt 989 && "$ranval" -le 995 ]]; then #HHJHYY
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then #HHJHYY
 
                 tohcho="\033[0;101m"
                 curroll="${tohcho}RHELiqious (reliqious)${NC}"
 
-            elif [[ "$ranval" -gt 995 && "$ranval" -le 998 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;41m"
                 curroll="${tohcho}Winematical (abominatical)${NC}"
 
-            elif [[ "$ranval" -gt 998 && "$ranval" -le 1000 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;105m"
                 curroll="${tohcho}GNUniversal (universal)${NC}"
