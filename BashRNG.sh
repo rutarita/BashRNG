@@ -91,7 +91,7 @@ while [[ "$input" != "x" ]]; do
                 tohcho="\033[0;35m"
                 curroll="${tohcho}Minixial (balladirical)${NC}"
 
-            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 5001 ]]; then
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;104m"
                 curroll="${tohcho}Nyarchd (untold)${NC}"
@@ -138,8 +138,15 @@ while [[ "$input" != "x" ]]; do
 
             fi
             rolls=$(( rolls + 1))
+            luckBonus=0
+            echo "Luck boost has been used!"
             echo -e "\nYou rolled $curroll !\n"
             progressToBoost=$(( progressToBoost + 1 ))
+            if [[ progressToBoost -eq 10 ]]; then
+            progressToBoost=0
+            boosts=$(( boosts + 1 ))
+            echo "+1 boost! You now have $boosts boosts."
+            fi
             echo "Progress to a luck boost:"
             echo -n "["
             for prgb in 1 2 3 4 5 6 7 8 9 10; do
@@ -154,9 +161,7 @@ while [[ "$input" != "x" ]]; do
             while [[ "$input" != "e" && "$input" != "d" && "$input" != "i" ]]; do
                 echo -e "Your current rarity is $currrar\n"
                 echo "Do you wish to"
-                echo "e - equip it"
-                echo "d - dismiss it"
-                echo "i - put it in the inventory"
+                echo -e "e - equip it\nd - dismiss it\ni - put it in the inventory\n"
                 read -r input
                 echo
                 if [[ "$input" = "e" ]]; then
@@ -186,46 +191,72 @@ while [[ "$input" != "x" ]]; do
             done
         ;;
         "b")
-        ;;
-        "i")
-        echo "Current items:"
-        echo -e "${inventory[@]}"
-        echo "What do you wish to do here?"
-        echo "e - equip (then you will be prompted to input the number)"
-        echo "d - discard an item(then you will be prompted to input the number)"
-        echo "x - exit the inventory"
+        echo "Current boosts: $boosts"
+        echo -e "u - use a boost and exit boost menu\nm - use multiple boosts\nb - buy a boost (not implemented yet)\nx - exit boosts menu"
         read -r input
         case "$input" in
-            "e")
-                echo "What would you like to equip? [1-${#inventory[@]}]"
-                read -r input
-                if [ "$input" -ge 1 ] && [ "$input" -le "${#inventory[@]}" ]; then
-                input=$(( input - 1 ))
-                curroll=${inventory[$input]}
-                tohcho=${cinventory[$input]}
-                inventory[input]=$currrar
-                cinventory[input]=$cc
-                currrar=$curroll
-                cc=$tohcho
-                echo -e "$currrar successfully equipped!"
-                else
-                echo "Not a valid input range, exiting the inventory"
-                fi
+            "u")
+            if [[ boosts -ge 1 ]]; then
+            luckBonus=$(( luckBonus + 10))
+            echo "Boost used succesfully, your current luck boost is +$luckBonus"
+            else
+            echo "Not enough boosts!"
+            fi
             ;;
-            "d")
-                                echo "What would you like to discard? [1-${#inventory[@]}]"
-                                read -r input
-                                if [ "$input" -ge 1 ] && [ "$input" -le "${#inventory[@]}" ]; then
-                                input=$(( input - 1 ))
-                                echo -e "${inventory[$input]} successfully discarded!"
-                                unset 'inventory[input]'
-                                unset 'cinventory[input]'
-                                else
-                                echo "Not a valid input range, exiting the inventory"
-                                fi
+            "m")
+            echo "Input amount of boosts you want to use. (Any amount greater then current boosts will be assumed as maximum)"
+            read -r input
+            if [[ $input -gt $boosts ]]; then
+            echo "$input will be maxxed out to $boosts."
+            input=$boosts
+            fi
+            luckBonus=$(( luckBonus + 10 * input))
+            echo -e "$input boosts used!\nCurrent luck boost is +$luckBonus"
+            input="foobar"
             ;;
 
-            "x")
+        esac
+        ;;
+        "i")
+            echo "Current items:"
+            echo -e "${inventory[@]}"
+            echo "What do you wish to do here?"
+            echo "e - equip (then you will be prompted to input the number)"
+            echo "d - discard an item(then you will be prompted to input the number)"
+            echo "x - exit the inventory"
+            read -r input
+            case "$input" in
+                "e")
+                    echo "What would you like to equip? [1-${#inventory[@]}]"
+                    read -r input
+                    if [ "$input" -ge 1 ] && [ "$input" -le "${#inventory[@]}" ]; then
+                    input=$(( input - 1 ))
+                    curroll=${inventory[$input]}
+                    tohcho=${cinventory[$input]}
+                    inventory[input]=$currrar
+                    cinventory[input]=$cc
+                    currrar=$curroll
+                    cc=$tohcho
+                    echo -e "$currrar successfully equipped!"
+                    else
+                    echo "Not a valid input range, exiting the inventory"
+                    fi
+                ;;
+                "d")
+                    echo "What would you like to discard? [1-${#inventory[@]}]"
+                    read -r input
+                    if [ "$input" -ge 1 ] && [ "$input" -le "${#inventory[@]}" ]; then
+                    input=$(( input - 1 ))
+                    echo -e "${inventory[$input]} successfully discarded!"
+                    unset 'inventory[input]'
+                    unset 'cinventory[input]'
+                    else
+                    echo "Not a valid input range, exiting the inventory"
+                    fi
+                ;;
+
+                "x")
+                ;;
 
         esac
         ;;
