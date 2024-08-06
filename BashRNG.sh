@@ -138,13 +138,21 @@ while [[ "$input" != "x" ]]; do
 
             fi
             rolls=$(( rolls + 1))
-            echo
-            echo -e "You rolled $curroll !"
-            echo
+            echo -e "\nYou rolled $curroll !\n"
+            progressToBoost=$(( progressToBoost + 1 ))
+            echo "Progress to a luck boost:"
+            echo -n "["
+            for prgb in 1 2 3 4 5 6 7 8 9 10; do
+            if [[ $prgb -le $progressToBoost ]]; then
+            echo -n "%"
+            else
+            echo -n " "
+            fi
+            done
+            echo "]"
             input="foobar"
             while [[ "$input" != "e" && "$input" != "d" && "$input" != "i" ]]; do
-                echo -e "Your current rarity is $currrar"
-                echo
+                echo -e "Your current rarity is $currrar\n"
                 echo "Do you wish to"
                 echo "e - equip it"
                 echo "d - dismiss it"
