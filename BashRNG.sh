@@ -37,7 +37,6 @@ while [[ "$input" != "x" ]]; do
     echo "l - load"
     echo "x - exit(no saving)"
     read -r input
-    #echo "$input"
 
     case "$input" in
         "r")
@@ -121,7 +120,7 @@ while [[ "$input" != "x" ]]; do
                 tohcho="\033[0;102m"
                 curroll="${tohcho}Emacsed (maxxed)${NC}"
 
-            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then #HHJHYY
+            elif [[ $(( RANDOM % 1000 + 1 + luckBonus)) -ge 500 ]]; then
 
                 tohcho="\033[0;101m"
                 curroll="${tohcho}RHELiqious (reliqious)${NC}"
